@@ -24,9 +24,9 @@ public class SystemHardwareApp extends HttpServlet {
         out.println("<p>Free Memory: " + osBean.getFreeMemorySize() / mb + " MB</p>");
         out.println("<p>Committed Virtual Memory: " + osBean.getCommittedVirtualMemorySize() / mb + " MB</p>");
 
-        out.println("<p>JVM Max memory: "+ Runtime.getRuntime().maxMemory() / mb + " MB</p>");
-        out.println("<p>JVM Free memory: "+ Runtime.getRuntime().freeMemory() / mb + " MB</p>");
-        out.println("<p>JVM Total memory: "+ Runtime.getRuntime().totalMemory() / mb + " MB</p>");
+        out.println("<p>JVM heap Max memory: "+ Runtime.getRuntime().maxMemory() / mb + " MB</p>");
+        out.println("<p>JVM heap Free memory: "+ Runtime.getRuntime().freeMemory() / mb + " MB</p>");
+        out.println("<p>JVM heap Total memory: "+ Runtime.getRuntime().totalMemory() / mb + " MB</p>");
 
         out.println("<p>Disk: " + (new File("/").getTotalSpace() / gb) + " GB</p>");
 
