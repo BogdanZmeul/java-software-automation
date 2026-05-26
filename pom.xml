@@ -9,7 +9,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>src-code-plagin</module>
+        <module>src-code-plugin</module>
+        <module>report-generation-plugin</module>
         <module>master-core</module>
     </modules>
 
