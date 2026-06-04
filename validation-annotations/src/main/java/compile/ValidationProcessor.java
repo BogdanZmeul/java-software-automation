@@ -1,7 +1,6 @@
 package compile;
 
 import com.squareup.javapoet.*;
-
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
@@ -18,7 +17,6 @@ public class ValidationProcessor extends AbstractProcessor {
 
             GenerateValidation annotation = classElement.getAnnotation(GenerateValidation.class);
             String className = annotation.className();
-            String packageName = processingEnv.getElementUtils().getPackageOf(classElement).toString();
 
             TypeSpec.Builder classBuilder = TypeSpec.classBuilder(className)
                     .addModifiers(Modifier.PUBLIC)
@@ -57,7 +55,7 @@ public class ValidationProcessor extends AbstractProcessor {
 
             classBuilder.addMethod(constructorBuilder.build());
 
-            JavaFile javaFile = JavaFile.builder(packageName, classBuilder.build())
+            JavaFile javaFile = JavaFile.builder("", classBuilder.build())
                     .indent("    ")
                     .build();
 
