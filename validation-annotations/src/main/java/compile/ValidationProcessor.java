@@ -8,7 +8,7 @@ import javax.lang.model.element.*;
 import java.io.IOException;
 import java.util.Set;
 
-@SupportedAnnotationTypes("GenerateValidation")
+@SupportedAnnotationTypes("compile.GenerateValidation")
 @SupportedSourceVersion(SourceVersion.RELEASE_24)
 public class ValidationProcessor extends AbstractProcessor {
 
