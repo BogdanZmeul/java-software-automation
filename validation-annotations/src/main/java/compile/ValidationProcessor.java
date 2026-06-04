@@ -20,7 +20,7 @@ public class ValidationProcessor extends AbstractProcessor {
 
             TypeSpec.Builder classBuilder = TypeSpec.classBuilder(className)
                     .addModifiers(Modifier.PUBLIC)
-                    .addJavadoc("Auto-generated DTO using JavaPoet framework.\n");
+                    .addJavadoc("Auto-generated Class by GenerateValidation annotation.\n");
 
             MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC);
@@ -56,7 +56,7 @@ public class ValidationProcessor extends AbstractProcessor {
             classBuilder.addMethod(constructorBuilder.build());
 
             JavaFile javaFile = JavaFile.builder("", classBuilder.build())
-                    .indent("    ")
+                    .indent("\t")
                     .build();
 
             try {

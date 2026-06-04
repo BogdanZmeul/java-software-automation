@@ -51,7 +51,6 @@ public class RuntimeValidator {
                     }
                 }
 
-                // Range validation handling double (works for int, float, long, etc.)
                 if (field.isAnnotationPresent(CheckRange.class)) {
                     CheckRange range = field.getAnnotation(CheckRange.class);
                     if (value instanceof Number) {
