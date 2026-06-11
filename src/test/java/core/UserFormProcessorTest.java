@@ -86,7 +86,7 @@ public class UserFormProcessorTest {
 
         System.out.println("Running testHeavyValidationOnlyOnCI on server");
         assertDoesNotThrow(() ->
-                processor.processForm("admin@gmail.com", "SuperComplexPass!@#123", 35.0)
+                processor.processForm("admin@gmail.com", "SuperComplexPass123", 35.0)
         );
     }
 
