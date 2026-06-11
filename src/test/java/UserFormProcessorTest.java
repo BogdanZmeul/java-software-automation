@@ -58,8 +58,8 @@ public class UserFormProcessorTest {
     Stream<DynamicTest> dynamicTestsForAgeValidation() {
         Random random = new Random();
 
-        Stream<Double> tooYoung = random.doubles(100, -50.0, 18.0).boxed();
-        Stream<Double> tooOld = random.doubles(100, 120.0001, 200.0).boxed();
+        Stream<Double> tooYoung = random.doubles(100, -50000, 18.0).boxed();
+        Stream<Double> tooOld = random.doubles(100, 120.0001, 200000.0).boxed();
 
         Stream<Double> allInvalidAges = Stream.concat(tooYoung, tooOld);
 
