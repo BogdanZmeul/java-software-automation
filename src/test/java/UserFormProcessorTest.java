@@ -77,12 +77,12 @@ public class UserFormProcessorTest {
 
     @Test
     @Tag("system")
-    @DisplayName("Execute heavy password brute-force validation only on CI server")
+    @DisplayName("Execute heavy password validation only on server")
     void testHeavyValidationOnlyOnCI() {
         String isCI = System.getenv("CI");
         assumeTrue("true".equalsIgnoreCase(isCI), "Skipping test testHeavyValidationOnlyOnCI");
 
-        System.out.println("Running testHeavyValidationOnlyOnCI CI server");
+        System.out.println("Running testHeavyValidationOnlyOnCI on server");
         assertDoesNotThrow(() ->
                 processor.processForm("admin@gmail.com", "SuperComplexPass!@#123", 35.0)
         );
