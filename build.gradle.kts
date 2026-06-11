@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("pmd")
 }
 
 group = "org.example"
@@ -22,4 +23,10 @@ tasks.test {
         junitXml.required.set(false)
         html.required.set(true)
     }
+}
+
+pmd {
+    isConsoleOutput = true
+    toolVersion = "7.16.0"
+    ruleSets = listOf("category/java/errorprone.xml", "category/java/bestpractices.xml")
 }
