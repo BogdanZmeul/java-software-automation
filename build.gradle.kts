@@ -19,6 +19,45 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+
+    exclude("suiteTests/**")
+
+    reports {
+        junitXml.required.set(false)
+        html.required.set(true)
+    }
+}
+
+tasks.register<Test>("runFastSuite") {
+    description = "Runs only the fast validation test suite."
+    group = "verification"
+
+    useJUnitPlatform()
+
+    val testSourceSet = sourceSets.test.get()
+    testClassesDirs = testSourceSet.output.classesDirs
+    classpath = testSourceSet.runtimeClasspath
+
+    include("suiteTests/FastValidationSuite.class")
+
+    reports {
+        junitXml.required.set(false)
+        html.required.set(true)
+    }
+}
+
+tasks.register<Test>("runSlowSuite") {
+    description = "Runs only the slow validation test suite."
+    group = "verification"
+
+    useJUnitPlatform()
+
+    val testSourceSet = sourceSets.test.get()
+    testClassesDirs = testSourceSet.output.classesDirs
+    classpath = testSourceSet.runtimeClasspath
+
+    include("suiteTests/SlowValidationSuite.class")
+
     reports {
         junitXml.required.set(false)
         html.required.set(true)

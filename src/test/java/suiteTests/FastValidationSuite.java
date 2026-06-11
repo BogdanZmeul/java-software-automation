@@ -1,9 +1,12 @@
+package suiteTests;
+
+import core.UserFormProcessorTest;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@IncludeTags({"slow", "system"})
+@IncludeTags("fast")
 @SelectClasses(UserFormProcessorTest.class)
-public class FullValidationSuite {
+public class FastValidationSuite {
 }
