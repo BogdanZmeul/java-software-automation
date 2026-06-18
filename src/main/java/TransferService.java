@@ -4,11 +4,13 @@ import java.util.Optional;
 
 public class TransferService {
     private final AccountRepository accountRepository;
+    private final CommissionService commissionService;
     private final NotificationService notificationService;
-    private static long transactionIdSequence = 1;
+    private static long transactionIdSequence = 1L;
 
-    public TransferService(AccountRepository accountRepository, NotificationService notificationService) {
+    public TransferService(AccountRepository accountRepository, CommissionService commissionService, NotificationService notificationService) {
         this.accountRepository = accountRepository;
+        this.commissionService = commissionService;
         this.notificationService = notificationService;
     }
 
@@ -33,12 +35,15 @@ public class TransferService {
             throw new IllegalStateException("Cannot transfer funds involving blocked accounts");
         }
 
-        if (source.getBalance() < amount) {
+        double commission = commissionService.calculateCommission(amount);
+        double totalCost = amount + commission;
+
+        if (source.getBalance() < totalCost) {
             notificationService.sendNotification(source.getId(), "Transfer failed: not enough funds");
             throw new IllegalArgumentException("Not enough funds in source account");
         }
 
-        source.setBalance(source.getBalance() - amount);
+        source.setBalance(source.getBalance() - totalCost);
         destination.setBalance(destination.getBalance() + amount);
 
         accountRepository.updateBalance(source);
