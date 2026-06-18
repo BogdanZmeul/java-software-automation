@@ -157,4 +157,27 @@ class TransferServiceTest {
                 );
     }
 
+    @Test
+    void shouldThrowExceptionWhenAmountIsNegative() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                transferService.executeTransfer(1L, 2L, -50.0)
+        );
+
+        assertEquals("Transfer amount must be positive", exception.getMessage());
+
+        verify(accountRepository, never()).updateBalance(any());
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenAmountIsZero() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                transferService.executeTransfer(1L, 2L, 0.0)
+        );
+
+        assertEquals("Transfer amount must be positive", exception.getMessage());
+
+        verify(accountRepository, never()).updateBalance(any());
+    }
+
 }
