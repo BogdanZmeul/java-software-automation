@@ -5,8 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
@@ -123,6 +128,33 @@ class TransferServiceTest {
         softly.assertThat(result.getTimestamp()).isNotNull();
 
         softly.assertAll();
+    }
+
+    @Test
+    void shouldReturnTransactionHistoryWithAssertJListChecks() {
+        Transaction t1 = new Transaction(101L, 1L, 2L, 50.0, "SUCCESS", Instant.now());
+        Transaction t2 = new Transaction(102L, 1L, 3L, 100.0, "SUCCESS", Instant.now());
+        Transaction t3 = new Transaction(103L, 2L, 1L, 500.0, "FAILED", Instant.now());
+
+        when(accountRepository.findTransactionsByAccountId(1L)).thenReturn(List.of(t1, t2, t3));
+
+        List<Transaction> history = transferService.getHistory(1L);
+
+        assertThat(history)
+                .isNotNull()
+                .hasSize(3);
+
+        assertThat(history)
+                .extracting(Transaction::getAmount)
+                .containsExactly(50.0, 100.0, 500.0);
+
+        assertThat(history)
+                .filteredOn(t -> "SUCCESS".equals(t.getStatus()))
+                .extracting(Transaction::getId, Transaction::getDestinationAccountId)
+                .containsExactlyInAnyOrder(
+                        tuple(101L, 2L),
+                        tuple(102L, 3L)
+                );
     }
 
 }
