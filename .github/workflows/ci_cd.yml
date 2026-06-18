@@ -32,6 +32,10 @@ jobs:
       - name: Run Checks and Tests
         run: ./gradlew check
 
+      - name: Run pitest
+        run: ./gradlew pitest
+
+
       - name: Build Project JAR
         run: ./gradlew jar
 
