@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("pmd")
     `maven-publish`
+    id("info.solidsoft.pitest") version "1.19.0"
 }
 
 group = "org.example"
@@ -51,4 +52,12 @@ publishing {
             }
         }
     }
+}
+
+pitest {
+    junit5PluginVersion.set("1.2.1")
+    targetClasses.set(setOf("TransferService"))
+    targetTests.set(setOf("TransferServiceTest"))
+    threads.set(8)
+    outputFormats.set(setOf("HTML"))
 }
