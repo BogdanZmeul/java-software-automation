@@ -34,8 +34,8 @@ public class TransferService {
         }
 
         if (source.getBalance() < amount) {
-            notificationService.sendNotification(source.getId(), "Transfer failed: Insufficient funds");
-            throw new IllegalArgumentException("Insufficient funds in source account");
+            notificationService.sendNotification(source.getId(), "Transfer failed: not enough funds");
+            throw new IllegalArgumentException("Not enough funds in source account");
         }
 
         source.setBalance(source.getBalance() - amount);
@@ -46,13 +46,8 @@ public class TransferService {
 
         long newTransactionId = transactionIdSequence++;
 
-        Transaction transaction = new Transaction(
-                newTransactionId,
-                fromAccountId,
-                toAccountId,
-                amount,
-                "SUCCESS",
-                Instant.now()
+        Transaction transaction = new Transaction(newTransactionId, fromAccountId,
+                toAccountId, amount, "SUCCESS", Instant.now()
         );
         accountRepository.saveTransaction(transaction);
 
