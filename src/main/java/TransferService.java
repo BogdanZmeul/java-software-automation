@@ -7,6 +7,7 @@ public class TransferService {
     private final CommissionService commissionService;
     private final NotificationService notificationService;
     private static long transactionIdSequence = 1L;
+    private static final double LARGE_TRANSFER_AMOUNT = 10000.0;
 
     public TransferService(AccountRepository accountRepository, CommissionService commissionService, NotificationService notificationService) {
         this.accountRepository = accountRepository;
@@ -59,7 +60,7 @@ public class TransferService {
         notificationService.sendNotification(source.getId(), "Sent money to " + destination.getOwnerName());
         notificationService.sendNotification(toAccountId, "Received money from " + source.getOwnerName());
 
-        if (amount > 10000.0) {
+        if (amount > LARGE_TRANSFER_AMOUNT) {
             notificationService.alertSecurityTeam("Large money transfer detected from account: " + fromAccountId);
         }
 

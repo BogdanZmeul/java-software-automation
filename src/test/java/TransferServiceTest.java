@@ -15,6 +15,10 @@ import static org.assertj.core.api.Assertions.tuple;
 
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
+    private static final String SENDER_NAME = "John Pork";
+    private static final String RECEIVER_NAME = "Pes Patron";
+    private static final String STATUS_SUCCESS = "SUCCESS";
+    
     @Mock
     AccountRepository accountRepository;
 
@@ -29,8 +33,8 @@ class TransferServiceTest {
 
     @Test
     void shouldExecuteTransferSuccessfully() {
-        Account source = new Account(1L, "John Pork", 1000.0, false);
-        Account destination = new Account(2L, "Pes Patron", 500.0, false);
+        Account source = new Account(1L, SENDER_NAME, 1000.0, false);
+        Account destination = new Account(2L, RECEIVER_NAME, 500.0, false);
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(source));
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
@@ -39,7 +43,7 @@ class TransferServiceTest {
         Transaction result = transferService.executeTransfer(1L, 2L, 200.0);
 
         assertNotNull(result);
-        assertEquals("SUCCESS", result.getStatus());
+        assertEquals(STATUS_SUCCESS, result.getStatus());
         assertEquals(790.0, source.getBalance(), "Source balance should decrease by amount + commission");
         assertEquals(700.0, destination.getBalance(), "Destination balance should increase by amount");
 
@@ -74,8 +78,8 @@ class TransferServiceTest {
 
     @Test
     void shouldThrowExceptionWhenNotEnoughFunds() {
-        Account source = new Account(1L, "John Pork", 50.0, false);
-        Account destination = new Account(2L, "Pes Patron", 500.0, false);
+        Account source = new Account(1L, SENDER_NAME, 50.0, false);
+        Account destination = new Account(2L, RECEIVER_NAME, 500.0, false);
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(source));
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
@@ -95,8 +99,8 @@ class TransferServiceTest {
 
     @Test
     void shouldAlertSecurityTeamOnLargeTransfer() {
-        Account source = new Account(1L, "John Pork", 20000.0, false);
-        Account destination = new Account(2L, "Pes Patron", 500.0, false);
+        Account source = new Account(1L, SENDER_NAME, 20000.0, false);
+        Account destination = new Account(2L, RECEIVER_NAME, 500.0, false);
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(source));
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
@@ -109,8 +113,8 @@ class TransferServiceTest {
 
     @Test
     void shouldCreateValidTransactionWithSoftAssertions() {
-        Account source = new Account(1L, "John Pork", 1000.0, false);
-        Account destination = new Account(2L, "Pes Patron", 500.0, false);
+        Account source = new Account(1L, SENDER_NAME, 1000.0, false);
+        Account destination = new Account(2L, RECEIVER_NAME, 500.0, false);
 
         when(accountRepository.findById(1L)).thenReturn(Optional.of(source));
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
@@ -132,8 +136,8 @@ class TransferServiceTest {
 
     @Test
     void shouldReturnTransactionHistoryWithAssertJListChecks() {
-        Transaction t1 = new Transaction(101L, 1L, 2L, 50.0, "SUCCESS", Instant.now());
-        Transaction t2 = new Transaction(102L, 1L, 3L, 100.0, "SUCCESS", Instant.now());
+        Transaction t1 = new Transaction(101L, 1L, 2L, 50.0, STATUS_SUCCESS, Instant.now());
+        Transaction t2 = new Transaction(102L, 1L, 3L, 100.0, STATUS_SUCCESS, Instant.now());
         Transaction t3 = new Transaction(103L, 2L, 1L, 500.0, "FAILED", Instant.now());
 
         when(accountRepository.findTransactionsByAccountId(1L)).thenReturn(List.of(t1, t2, t3));
