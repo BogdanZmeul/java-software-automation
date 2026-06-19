@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 @ExtendWith(MockitoExtension.class)
-class TransferServiceTest {
+class TransactionExecutorServiceTest {
     private static final String SENDER_NAME = "John Pork";
     private static final String RECEIVER_NAME = "Pes Patron";
     private static final String STATUS_SUCCESS = "SUCCESS";
@@ -26,10 +26,10 @@ class TransferServiceTest {
     CommissionService commissionService;
 
     @Mock
-    NotificationService notificationService;
+    NotificationSenderService notificationSenderService;
 
     @InjectMocks
-    TransferService transferService;
+    TransactionExecutorService transactionExecutorService;
 
     @Test
     void shouldExecuteTransferSuccessfully() {
@@ -40,7 +40,7 @@ class TransferServiceTest {
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
         when(commissionService.calculateCommission(200.0)).thenReturn(10.0);
 
-        Transaction result = transferService.executeTransfer(1L, 2L, 200.0);
+        Transaction result = transactionExecutorService.executeTransfer(1L, 2L, 200.0);
 
         assertNotNull(result);
         assertEquals(STATUS_SUCCESS, result.getStatus());
@@ -55,10 +55,10 @@ class TransferServiceTest {
 
         verify(accountRepository).saveTransaction(any(Transaction.class));
 
-        verify(notificationService).sendNotification(1L, "Sent money to Pes Patron");
-        verify(notificationService).sendNotification(2L, "Received money from John Pork");
+        verify(notificationSenderService).sendNotification(1L, "Sent money to Pes Patron");
+        verify(notificationSenderService).sendNotification(2L, "Received money from John Pork");
 
-        verify(notificationService, never()).alertSecurityTeam(anyString());
+        verify(notificationSenderService, never()).alertSecurityTeam(anyString());
     }
 
     @Test
@@ -66,14 +66,14 @@ class TransferServiceTest {
         when(accountRepository.findById(99L)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                transferService.executeTransfer(99L, 2L, 100.0)
+                transactionExecutorService.executeTransfer(99L, 2L, 100.0)
         );
 
         assertEquals("Source account not found", exception.getMessage());
 
         verify(accountRepository, never()).updateBalance(any());
         verify(accountRepository, never()).saveTransaction(any());
-        verify(notificationService, never()).sendNotification(anyLong(), anyString());
+        verify(notificationSenderService, never()).sendNotification(anyLong(), anyString());
     }
 
     @Test
@@ -86,14 +86,14 @@ class TransferServiceTest {
         when(commissionService.calculateCommission(200.0)).thenReturn(10.0);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                transferService.executeTransfer(1L, 2L, 200.0)
+                transactionExecutorService.executeTransfer(1L, 2L, 200.0)
         );
 
         assertEquals("Not enough funds in source account", exception.getMessage());
         assertEquals(50.0, source.getBalance(), "Balance should remain unchanged");
 
-        verify(notificationService, times(1)).sendNotification(1L, "Transfer failed: not enough funds");
-        verifyNoMoreInteractions(notificationService);
+        verify(notificationSenderService, times(1)).sendNotification(1L, "Transfer failed: not enough funds");
+        verifyNoMoreInteractions(notificationSenderService);
         verify(accountRepository, never()).updateBalance(any());
     }
 
@@ -106,9 +106,9 @@ class TransferServiceTest {
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
         when(commissionService.calculateCommission(15000.0)).thenReturn(150.0);
 
-        transferService.executeTransfer(1L, 2L, 15000.0);
+        transactionExecutorService.executeTransfer(1L, 2L, 15000.0);
 
-        verify(notificationService, times(1)).alertSecurityTeam("Large money transfer detected from account: 1");
+        verify(notificationSenderService, times(1)).alertSecurityTeam("Large money transfer detected from account: 1");
     }
 
     @Test
@@ -120,7 +120,7 @@ class TransferServiceTest {
         when(accountRepository.findById(2L)).thenReturn(Optional.of(destination));
         when(commissionService.calculateCommission(200.0)).thenReturn(10.0);
 
-        Transaction result = transferService.executeTransfer(1L, 2L, 200.0);
+        Transaction result = transactionExecutorService.executeTransfer(1L, 2L, 200.0);
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -142,7 +142,7 @@ class TransferServiceTest {
 
         when(accountRepository.findTransactionsByAccountId(1L)).thenReturn(List.of(t1, t2, t3));
 
-        List<Transaction> history = transferService.getHistory(1L);
+        List<Transaction> history = transactionExecutorService.getHistory(1L);
 
         assertThat(history)
                 .isNotNull()
@@ -164,7 +164,7 @@ class TransferServiceTest {
     @Test
     void shouldThrowExceptionWhenAmountIsNegative() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                transferService.executeTransfer(1L, 2L, -50.0)
+                transactionExecutorService.executeTransfer(1L, 2L, -50.0)
         );
 
         assertEquals("Transfer amount must be positive", exception.getMessage());
@@ -176,7 +176,7 @@ class TransferServiceTest {
     @Test
     void shouldThrowExceptionWhenAmountIsZero() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                transferService.executeTransfer(1L, 2L, 0.0)
+                transactionExecutorService.executeTransfer(1L, 2L, 0.0)
         );
 
         assertEquals("Transfer amount must be positive", exception.getMessage());

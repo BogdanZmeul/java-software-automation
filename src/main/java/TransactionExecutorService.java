@@ -2,17 +2,17 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-public class TransferService {
+public class TransactionExecutorService {
     private final AccountRepository accountRepository;
     private final CommissionService commissionService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationSenderService;
     private static long transactionIdSequence = 1L;
     private static final double LARGE_TRANSFER_AMOUNT = 10000.0;
 
-    public TransferService(AccountRepository accountRepository, CommissionService commissionService, NotificationService notificationService) {
+    public TransactionExecutorService(AccountRepository accountRepository, CommissionService commissionService, NotificationSenderService notificationSenderService) {
         this.accountRepository = accountRepository;
         this.commissionService = commissionService;
-        this.notificationService = notificationService;
+        this.notificationSenderService = notificationSenderService;
     }
 
     public Transaction executeTransfer(long fromAccountId, long toAccountId, double amount) {
@@ -40,7 +40,7 @@ public class TransferService {
         double totalCost = amount + commission;
 
         if (source.getBalance() < totalCost) {
-            notificationService.sendNotification(source.getId(), "Transfer failed: not enough funds");
+            notificationSenderService.sendNotification(source.getId(), "Transfer failed: not enough funds");
             throw new IllegalArgumentException("Not enough funds in source account");
         }
 
@@ -57,11 +57,11 @@ public class TransferService {
         );
         accountRepository.saveTransaction(transaction);
 
-        notificationService.sendNotification(source.getId(), "Sent money to " + destination.getOwnerName());
-        notificationService.sendNotification(toAccountId, "Received money from " + source.getOwnerName());
+        notificationSenderService.sendNotification(source.getId(), "Sent money to " + destination.getOwnerName());
+        notificationSenderService.sendNotification(toAccountId, "Received money from " + source.getOwnerName());
 
         if (amount > LARGE_TRANSFER_AMOUNT) {
-            notificationService.alertSecurityTeam("Large money transfer detected from account: " + fromAccountId);
+            notificationSenderService.alertSecurityTeam("Large money transfer detected from account: " + fromAccountId);
         }
 
         return transaction;
