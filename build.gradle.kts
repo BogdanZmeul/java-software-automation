@@ -56,8 +56,8 @@ publishing {
 
 pitest {
     junit5PluginVersion.set("1.2.1")
-    targetClasses.set(setOf("TransferService"))
-    targetTests.set(setOf("TransferServiceTest"))
+    targetClasses.set(setOf("TransactionExecutorService"))
+    targetTests.set(setOf("TransactionExecutorServiceTest"))
     threads.set(8)
     outputFormats.set(setOf("HTML"))
 }
